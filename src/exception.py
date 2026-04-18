@@ -1,6 +1,7 @@
 import sys
 from src.logger import logging
 
+## error function to get the error from sys along with line number
 def error_message_detail(error, error_detail:sys):
     _,_,exc_tb = error_detail.exc_info()
     file_name = exc_tb.tb_frame.f_code.co_filename
@@ -9,7 +10,7 @@ def error_message_detail(error, error_detail:sys):
 
     return error_message
     
-
+## Custom exception class to retrieve the error from above function
 class CustomException(Exception):
     def __init__(self, error_message, error_detail:sys):
         super().__init__(error_message)
