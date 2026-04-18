@@ -104,3 +104,19 @@ creates the csv file for raw data.
 3. Add the same params value in the model_report in model_trainer.py where you are calling evaluate_model().
 4. Add the Hyperparameters of different models in a new dict - params in model_trainer.py.
 5. Execute the data ingestion.py again with the new hyperparameter codes and it will give you a better output of your r2 score from the previous models. 
+
+
+## FLASK (PREDICT PIPELINE)
+1. Create app.py for our flask application in ml folder.
+2. Initialize your / route to the index.html. (Create index.html in a templates folder in ml folder)(Add all the html files in the templates folder)
+3. Create home.html in a templates folder, paste the required html code. It's a simple code to take input from the user for the independent data.
+4. Call the predict_datapoint() initialized in app.py (/predictdata) in the home.html's form tag (in the action) with method as POST (to post the data to the model from the user).
+5. Now create CustomData class in predict_pipeline.py in which you basically have to map all the input fields from html to our independent data.
+6. Provide all your fields and map it to self. 
+7. Then create predict() in PredictPipeline Class and pass the model.pkl and preprocessor.pkl path file and apply load_object with both the paths. (Initialize load_object() in utils.py - it basically helps to load the pickle files).
+8. After loading, scale the data using preprocessor and then predict the data using the model. Return the preds.
+9. Then you have to call this CustomData() in app.py in your (/predictdata) route in POST method to get the data from html/user.
+10. Based on this data, call the get_data_as_data_frame() from CustomData() as pred_df
+11. Then based on this pred_df, we can predict the data by calling PredictPipeline() based on our preprocessor and model.pkl files. 
+12. Then post the results in the home.html - in h2 tag to get the results.
+13. Then call the main function in 0.0.0.0 host in app.py.
