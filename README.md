@@ -85,4 +85,22 @@ creates the csv file for raw data.
 7. All things set, now to run this classes and functions, call it in the __main__ function in data_ingestion.py. Call the DataTransformation() and the initiate_data_transformation() with the train and test data we prepared in data_ingestion file. 
 
 
+## MODEL TRAINER :
+1. Create dataclass to initialize and save your pkl file in the artifacts folder when created.
+2. Create ModelTrainer clas with initiate_model_trainer() function to input the train and test arr. 
+3. Slice the X train and X test, y train and y test. Create the dict of models to apply. 
+4. Train all your models based on your training and testing data in model_report with help of evaluate_models() which we have to add in utils.py - This evaluate_model() helps to train your data on that model, predict the values, and also evaluate the r2 score. 
+5. This report_model then returns a dictionary where the keys are model names and the values are their R² scores.
+6. Then find the best model score by evaluating the max score from model_report values.
+7. Find the best model name based upon the keys for the best model score. 
+8. save_object() - save your trained model config in the mentioned path in @dataclass.
+9. predict your values in the best model and return the r2 score.
+10. Now edit the main Data ingestion file. Import model_trainer.py and then call ModelTrainer() along with initiate_model_trainer(). 
 
+
+## HYPER PARAMETER TUNING
+1. Add the hyperparameters and implement GridSearchCV in utils.py (Comment the previous model training code as we are implementing the grid search training).
+2. Pass the params in the evaluate_model().
+3. Add the same params value in the model_report in model_trainer.py where you are calling evaluate_model().
+4. Add the Hyperparameters of different models in a new dict - params in model_trainer.py.
+5. Execute the data ingestion.py again with the new hyperparameter codes and it will give you a better output of your r2 score from the previous models. 
