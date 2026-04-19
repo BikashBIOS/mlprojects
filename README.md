@@ -120,3 +120,92 @@ creates the csv file for raw data.
 11. Then based on this pred_df, we can predict the data by calling PredictPipeline() based on our preprocessor and model.pkl files. 
 12. Then post the results in the home.html - in h2 tag to get the results.
 13. Then call the main function in 0.0.0.0 host in app.py.
+
+
+## AWS Beanstalk Deployment
+1. Create new folder .ebextensions. Add new file python.config and add necessary codes.
+2. Change your app.py file name to application.py
+3. Then create an Elastic Beanstalk app in AWS Console
+4. Create Codepipeline in AWS Console. Provide your GitHub link and connect to your Code base.
+
+
+## DOCKER Deployment/AWS CI-CD Pipelines
+1. Create the image for your project on Docker desktop : 
+- docker build student-performance-app
+- docker run -p 5000:5000 student-performance-app
+- if app runs successfully in localhost:5000, your Dockerfile is perfect.
+- IMP - Add a new file 'Dockerfile' in your project folder and copy paste the generic code. 
+2. Create a new folder '.github'. Inside it create 'workflows'. Then create main.yaml file.
+3. Copy paste the code in main.yaml (The code present in your github repo -> Actions -> Deploy to Amazon ECS)
+4. Create your IAM user in AWS IAM Users:
+- Grant the permissions policy - AmazonEC2ContainerRegistryFullAccess and AmazonEC2FullAccess
+- Create Access Key -> For CLI -> Create Access key -> Download and keep it.(User Created)
+5. Go to ECR (elastic container registy):
+- create new repository
+- give name student-performance
+- Create repository
+6. Go to EC2 Instance:
+- Give webserver name as 'student-performance'
+- Select ubuntu 64
+- Instance - t2.micro (free)
+- Select Allow HTTP and Allow HTTPS
+- Launch Instance
+- After successfully running, connect to instance.
+- Connect to EC2 Instance Connect.
+- Now you will get the command line interface to give commands.
+7. Install Docker packages in EC2 : 
+- In CLI, sudo apt-get update -y
+- sudo apt-get upgrade
+- curl -fsSL https:get.docker.com -o get-docker.sh
+- sudo sh get-docker.sh
+- sudo usermod -aG docker ubuntu
+- newgrp docker
+- To check if everything's fine, run 'docker'
+8. Configure 'Runner' 
+- Open Github repo, go to Settings -> Actions -> Runner.
+- Create Runner -> Linux -> Copy the code. 
+- Paste in EC2 Instance CLI. 
+- Execute all the commands of the Runner that's shown in github.
+- Give the app runner name as 'self-hosted'
+- Now ./run.sh -> Connected to Github. 
+- After this , your self-hosted runner would be created in github runners and it would be running in green-idle.
+9. Add the Secret Keys in your Github repo :
+- Add a new key - AWS_ACCESS_KEY_ID. Open your downloaded access key in step 4, and copy the Access key in the Secret. Then Create.
+- Add a new key - AWS_SECRET_ACCESS_KEY - Same copy paste the secret access key and create.
+- Add 3rd key - AWS_REGION - In Secret - add your region for eg. us-east-1 and create.
+- Add 4th key - AWS_ECR_LOGIN_URI - Copy your ECR instance url/your ecr app name that created in step 5.
+- Add 5th key - ECR_REPOSITORY_NAME - the name you have provided to your ECR instance.
+- Commit all the changes. 
+10. Now if you make any changes in your code in your project, it will be registered in the workflows tab of your github.And it will directly start to deploy in AWS ECR. 
+11. Go to our EC2 instance : 
+- Open Security tab
+- Edit Inbound rules
+- Add 'Custom TCP' in port - 8080 (as mentioned in app.py in our project)
+- Then open the url of your EC2 instance and add :8080 in that and run in browser - our project will successfully be displayed. 
+- IMP - ensure to close all your EC2 instances, ECR repositories, Delete users and remove the Runners to avoid extra charges.
+
+
+## DOCKER Deployment/AZURE
+1. Go to Microsoft Azure -> Container Registry:
+- Create Container Registry
+- Give Resource group, Registry name, Create
+- After creating, go to Access Keys, and enable the Admin user. Copy the Login server and Password.
+2. Open Web App:
+- Create Web App
+- Give Resource group, Name, Select Docker Container, OS-Linux, Next.
+- Options-Single Container, Select the same Registry and then we have to upload the Image.
+3. Creating Docker Image for our project:
+- Go to our project cmd and write : 
+- docker build -t 'ContainerRegistry Login server/application name:latest'
+- docker login 'ContainerRegistry Login server' (Provide your user name and ContainerRegistry password)
+- docker push 'ContainerRegistry Login server/application name:latest'
+- Now the full docker image file will be pushed to your Container Registry.
+4. After you build the image, we need to upload it in the web app in step 2 and create web app. 
+5. After deployment to the web app, Go to Deployment Center in your created web app. 
+- enable Continuous deployment.
+- Select the Source as 'Github Actions'
+- Select organization as your Github user name
+- Select the Repository name.
+- Select the branch as mian. 
+- Then save.
+6. Then in our github, ./github/workflows will get created and now you can see your deployment/continuous changes will start showing in your workflows tab in github repo.
